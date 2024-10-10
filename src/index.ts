@@ -6,6 +6,15 @@ import express, {
 } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
+const usedTokens = new Set<string>();
+
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret)
+  throw new Error("JWT_SECRET is not defined in environment variables");
+
+const apiKey = process.env.API_KEY;
+if (!apiKey) throw new Error("API_KEY is not defined in environment variables");
+
 const app = express();
 const PORT = 3000;
 
@@ -16,9 +25,8 @@ const apiKeyMiddleware = (
   res: Response,
   next: NextFunction
 ): Response | void => {
-  const apiKey = req.headers["x-parse-rest-api-key"];
-  if (apiKey !== "2f5ae96c-b558-4c7b-a590-a501ae1c3f6c")
-    return res.status(403).send("Forbidden");
+  const apiKeyHeader = req.headers["x-parse-rest-api-key"];
+  if (apiKeyHeader !== apiKey) return res.status(403).send("Forbidden");
 
   next();
 };
@@ -33,14 +41,19 @@ const jwtMiddleware = (
   const token = req.headers["x-jwt-kwy"] as string;
   if (!token) return res.status(401).send("Unauthorized");
 
+  if (usedTokens.has(token))
+    return res.status(401).send("Unauthorized: Token already used");
+
   jwt.verify(
     token,
-    "your-secret-key",
+    jwtSecret,
     (
       err: jwt.VerifyErrors | null,
       decoded: JwtPayload | string | undefined
     ) => {
-      if (err) return res.status(401).send("Unauthorized");
+      if (err) return res.status(401).send("Unauthorized: " + err.message);
+
+      usedTokens.add(token);
 
       next();
     }
@@ -57,13 +70,13 @@ app.post("/DevOps", (req: Request, res: Response): void => {
   }
 
   const payload = { message, to, from, timeToLifeSec };
-  const token = jwt.sign(payload, "your-secret-key", { expiresIn: "1h" });
+  const token = jwt.sign(payload, jwtSecret, {
+    expiresIn: timeToLifeSec + "s",
+  });
 
   res.header("X-JWT-KWY", token);
 
-  res.json({
-    message: `Hello ${to}, your message will be sent`,
-  });
+  res.json({ message: `Hello ${to} your message will be send` });
 });
 
 app.all("/DevOps", (req: Request, res: Response) => {
