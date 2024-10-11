@@ -94,4 +94,4 @@ jobs:
           kubectl apply -f k8s/secret.yaml
           kubectl apply -f k8s/configmap.yaml
           kubectl apply -f k8s/ingress.yaml
-          kubectl apply -f letsencrypt-issuer.yaml
+          kubectl apply -f k8s/letsencrypt-issuer.yaml
