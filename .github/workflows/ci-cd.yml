@@ -8,7 +8,36 @@ on:
   pull_request:
 
 jobs:
+  # Build Stage
   build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build Project
+        run: yarn build
+
+      - name: Build Docker Image
+        run: docker build -t jrdnbrj/devops:${{ github.sha }} .
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      
+      - name: Push Docker image to Docker Hub
+        run: docker push jrdnbrj/devops:${{ github.sha }}
+
+  # Test Stage
+  test:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -28,29 +57,24 @@ jobs:
       - name: Run Tests
         run: yarn test
 
-      - name: Build Project
-        run: yarn build
-
-      - name: Build Docker Image
-        run: docker build -t jrdnbrj/devops:${{ github.sha }} .
-
-      - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      
-      - name: Push Docker image to Docker Hub
-        run: docker push jrdnbrj/devops:${{ github.sha }}
-
+  # Deploy Stage
   deploy:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
-      - name: Setup Kubeconfig for DigitalOcean
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install doctl
         run: |
-          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          sudo snap install doctl
+        
+      - name: Authenticate with DigitalOcean
+        run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Set up Kubeconfig for DigitalOcean
+        run: doctl kubernetes cluster kubeconfig save c0bd3093-42ae-474d-96aa-539c3b0b7281
           
       - name: Deploy to Kubernetes
         run: |
