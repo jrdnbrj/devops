@@ -75,6 +75,7 @@ jobs:
 
       - name: Setup Kubeconfig for DigitalOcean
         run: |
+          mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
         env:
