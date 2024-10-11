@@ -2,10 +2,21 @@ apiVersion: v1
 kind: Service
 metadata:
   name: devops-service
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
+    service.beta.kubernetes.io/do-loadbalancer-certificate-name: "097085cb-2d83-4643-8eac-47129bb4fbbc"
+    service.beta.kubernetes.io/do-loadbalancer-tls-ports: "443"
+    service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https: "true"
 spec:
-  selector:
-    app: devops
-  ports:
-    - port: 80
-      targetPort: 3000
   type: LoadBalancer
+  selector:
+    app: devops-app
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 80
