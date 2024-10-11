@@ -13,7 +13,7 @@ spec:
   - host: devops.jrdnbrj.com
     http:
       paths:
-      - path: /
+      - path: /.well-known/acme-challenge/
         pathType: Prefix
         backend:
           service:
