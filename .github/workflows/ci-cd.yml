@@ -45,6 +45,13 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
+      - name: Setup Kubeconfig for DigitalOcean
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          
       - name: Deploy to Kubernetes
         run: |
           sed -i 's|image: jrdnbrj/devops:.*|image: jrdnbrj/devops:${{ github.sha }}|' k8s/deployment.yaml
