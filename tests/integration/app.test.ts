@@ -25,7 +25,7 @@ describe('Integration Test: App', () => {
   afterEach(() => { jest.clearAllMocks(); });
 
   describe('Full Integration Flow', () => {
-    it('should process a valid request successfully', async () => {
+    it('Should process a valid request successfully', async () => {
       const payload = {
         message: 'This is a test',
         to: 'Juan Perez',
@@ -39,14 +39,8 @@ describe('Integration Test: App', () => {
       (jwt.sign as jest.Mock).mockImplementation(() => generatedToken);
 
       (jwt.verify as jest.Mock).mockImplementation((token, secret) => {
-        if (token === 'super-token')
-          return { iss: 'super-token' };
-        else
-          return {
-            iss: 'my-key',
-            jti: jtiValue,
-            ...payload,
-          };
+        if (token === 'super-token') return { iss: 'super-token' };
+        else return { iss: 'my-key', jti: jtiValue, ...payload };
       });
 
       const response = await request(app)
@@ -81,7 +75,7 @@ describe('Integration Test: App', () => {
       );
     });
 
-    it('should fail when API Key is missing', async () => {
+    it('Should fail when API Key is missing', async () => {
       const payload = {
         message: 'This is a test',
         to: 'Juan Perez',
@@ -98,7 +92,7 @@ describe('Integration Test: App', () => {
       expect(response.text).toBe('Forbidden');
     });
 
-    it('should fail when JWT token is missing', async () => {
+    it('Should fail when JWT token is missing', async () => {
       const payload = {
         message: 'This is a test',
         to: 'Juan Perez',
@@ -115,7 +109,7 @@ describe('Integration Test: App', () => {
       expect(response.text).toContain('Invalid or expired token');
     });
 
-    it('should handle invalid JWT token', async () => {
+    it('Should handle invalid JWT token', async () => {
       const payload = {
         message: 'This is a test',
         to: 'Juan Perez',
@@ -137,7 +131,7 @@ describe('Integration Test: App', () => {
       expect(response.text).toContain('Unauthorized');
     });
 
-    it('should handle requests with other HTTP methods', async () => {
+    it('Should handle requests with other HTTP methods', async () => {
       const methods = ['get', 'put', 'delete', 'patch'];
 
       for (const method of methods) {

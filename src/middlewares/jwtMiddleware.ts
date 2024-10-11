@@ -27,9 +27,7 @@ export const checkTokenUniqueness = async (
     await redisClient.del(jti);
     next();
   } catch (err) {
-    if (err instanceof Error)
-      return res.status(401).send("Unauthorized: " + err.message);
-
-    return res.status(401).send("Unauthorized");
+    const errorMessage = err instanceof Error ? err.message : "Unauthorized";
+    return res.status(401).send(`Unauthorized: ${errorMessage}`);
   }
 };

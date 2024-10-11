@@ -5,13 +5,10 @@ import { redisClient } from '../../src/services/redisService';
 
 jest.mock('jsonwebtoken');
 jest.mock('../../src/services/redisService', () => ({
-  redisClient: {
-    get: jest.fn(),
-    del: jest.fn(),
-  },
+  redisClient: { get: jest.fn(), del: jest.fn() },
 }));
 
-describe('checkTokenUniqueness', () => {
+describe('JWT Middleware', () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let next: NextFunction;
@@ -30,11 +27,9 @@ describe('checkTokenUniqueness', () => {
     process.env.JWT_SECRET = mockJwtSecret;
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(() => { jest.clearAllMocks(); });
 
-  it('debe permitir la solicitud cuando el token es válido y está en Redis', async () => {
+  it('Should allow the request when the token is valid and in Redis.', async () => {
     const token = 'Bearer valid-token';
     req.headers!['x-jwt-kwy'] = token;
 
@@ -51,7 +46,7 @@ describe('checkTokenUniqueness', () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it('debe permitir la solicitud cuando el token es un super-token', async () => {
+  it('Should allow the request when the token is a super-token', async () => {
     const token = 'Bearer super-token';
     req.headers!['x-jwt-kwy'] = token;
 
@@ -67,7 +62,7 @@ describe('checkTokenUniqueness', () => {
     expect(next).toHaveBeenCalled();
   });
 
-  it('debe rechazar la solicitud cuando el token no tiene jti', async () => {
+  it('Should reject the request when the token does not have jti', async () => {
     const token = 'Bearer token-without-jti';
     req.headers!['x-jwt-kwy'] = token;
 
@@ -82,7 +77,7 @@ describe('checkTokenUniqueness', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('debe rechazar la solicitud cuando el token no está en Redis', async () => {
+  it('Should reject the request when the token is not in Redis', async () => {
     const token = 'Bearer valid-token-not-in-redis';
     req.headers!['x-jwt-kwy'] = token;
 
@@ -98,7 +93,7 @@ describe('checkTokenUniqueness', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('debe rechazar la solicitud cuando el token es inválido', async () => {
+  it('Should reject the request when the token is invalid', async () => {
     const token = 'Bearer invalid-token';
     req.headers!['x-jwt-kwy'] = token;
 
@@ -113,7 +108,7 @@ describe('checkTokenUniqueness', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('debe rechazar la solicitud cuando el header x-jwt-kwy no está presente', async () => {
+  it('Should reject the request when the x-jwt-kwy header is not present', async () => {
     await checkTokenUniqueness(req as Request, res as Response, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
@@ -121,7 +116,7 @@ describe('checkTokenUniqueness', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('debe rechazar la solicitud cuando el token tiene un formato inválido', async () => {
+  it('Should reject the request when the token has an invalid format', async () => {
     req.headers!['x-jwt-kwy'] = 'InvalidTokenFormat';
 
     await checkTokenUniqueness(req as Request, res as Response, next);

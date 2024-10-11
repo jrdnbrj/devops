@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:9.6
+        env:
+          - name: POSTGRES_USER
+            value: "kong"
+          - name: POSTGRES_DB
+            value: "kong"
+          - name: POSTGRES_PASSWORD
+            value: "kong"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: kong-db-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: kong-db-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432

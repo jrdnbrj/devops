@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { apiKeyMiddleware } from '../../src/middlewares/apiKeyMiddleware';
 
-describe('apiKeyMiddleware', () => {
+describe('API Key Middleware', () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
   let next: NextFunction;
@@ -19,7 +19,7 @@ describe('apiKeyMiddleware', () => {
     process.env.API_KEY = mockApiKey;
   });
 
-  it('debe permitir la solicitud cuando el API Key es correcto', () => {
+  it('Should allow the request when the API Key is correct.', () => {
     req.headers!['x-parse-rest-api-key'] = mockApiKey;
 
     apiKeyMiddleware(req as Request, res as Response, next);
@@ -29,7 +29,7 @@ describe('apiKeyMiddleware', () => {
     expect(res.send).not.toHaveBeenCalled();
   });
 
-  it('debe rechazar la solicitud cuando el API Key es incorrecto', () => {
+  it('Should reject the request when the API Key is incorrect', () => {
     req.headers!['x-parse-rest-api-key'] = 'incorrect-api-key';
 
     apiKeyMiddleware(req as Request, res as Response, next);
@@ -39,7 +39,7 @@ describe('apiKeyMiddleware', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('debe rechazar la solicitud cuando el API Key no está presente', () => {
+  it('Should reject the request when the API Key is not present', () => {
     apiKeyMiddleware(req as Request, res as Response, next);
 
     expect(res.status).toHaveBeenCalledWith(403);

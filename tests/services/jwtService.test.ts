@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 jest.mock('jsonwebtoken');
 
-describe('generateToken', () => {
+describe('JWT Service', () => {
   const mockPayload = { data: 'test' };
   const mockExpiresIn = '1h';
   const mockToken = 'mock.jwt.token';
@@ -16,7 +16,7 @@ describe('generateToken', () => {
 
   afterEach(() => { jest.clearAllMocks(); });
 
-  it('debe generar un token JWT con el payload y expiración correctos', () => {
+  it('Must generate a JWT token with the correct payload and expiration', () => {
     const token = generateToken(mockPayload, mockExpiresIn);
 
     expect(jwt.sign).toHaveBeenCalledWith(
@@ -27,7 +27,7 @@ describe('generateToken', () => {
     expect(token).toBe(mockToken);
   });
 
-  it('debe lanzar un error si JWT_SECRET no está definido', () => {
+  it('Must throw an error if JWT_SECRET is not defined', () => {
     delete process.env.JWT_SECRET;
 
     expect(() => generateToken(mockPayload, mockExpiresIn)).toThrow(

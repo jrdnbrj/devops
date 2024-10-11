@@ -5,14 +5,10 @@ import { redisClient } from '../../src/services/redisService';
 
 jest.mock('jsonwebtoken');
 jest.mock('../../src/services/redisService', () => ({
-  redisClient: {
-    setEx: jest.fn(),
-    get: jest.fn(),
-    del: jest.fn(),
-  },
+  redisClient: { setEx: jest.fn(), get: jest.fn(), del: jest.fn() },
 }));
 
-describe('devOpsRoutes', () => {
+describe('DevOps Routes', () => {
   const API_KEY = '2f5ae96c-b558-4c7b-a590-a501ae1c3f6c';
   const JWT_SECRET = 'test-jwt-secret';
   const SUPER_TOKEN = 'super.jwt.token';
@@ -25,7 +21,7 @@ describe('devOpsRoutes', () => {
   afterEach(() => { jest.clearAllMocks(); });
 
   describe('POST /DevOps', () => {
-    it('debe retornar mensaje de éxito y token cuando el payload es válido', async () => {
+    it('Should return success message and token when payload is valid', async () => {
       const payload = {
         message: 'This is a test',
         to: 'Juan Perez',
@@ -72,7 +68,7 @@ describe('devOpsRoutes', () => {
       );
     });
 
-    it('debe retornar error 400 cuando el payload es inválido', async () => {
+    it('Should return error 400 when payload is invalid', async () => {
       const payload = { message: 'This is a test', to: 'Juan Perez' };
 
       const superDecodedToken = { iss: 'super-token' };
@@ -89,7 +85,7 @@ describe('devOpsRoutes', () => {
       expect(response.body).toEqual({ error: 'Invalid payload' });
     });
 
-    it('debe retornar 403 cuando el API Key es inválido', async () => {
+    it('Should return 403 when API Key is invalid', async () => {
       const payload = {
         message: 'This is a test',
         to: 'Juan Perez',
@@ -112,8 +108,8 @@ describe('devOpsRoutes', () => {
     });
   });
 
-  describe('Otros métodos HTTP en /DevOps', () => {
-    it('debe retornar "ERROR" para el método GET', async () => {
+  describe('Other HTTP methods in /DevOps', () => {
+    it('Should return "ERROR" for GET method', async () => {
       const superDecodedToken = { iss: 'super-token' };
 
       (jwt.verify as jest.Mock).mockReturnValue(superDecodedToken);
@@ -127,7 +123,7 @@ describe('devOpsRoutes', () => {
       expect(response.text).toBe('ERROR');
     });
 
-    it('debe retornar "ERROR" para el método PUT', async () => {
+    it('Should return "ERROR" for PUT method', async () => {
       const superDecodedToken = { iss: 'super-token' };
 
       (jwt.verify as jest.Mock).mockReturnValue(superDecodedToken);
@@ -142,7 +138,7 @@ describe('devOpsRoutes', () => {
       expect(response.text).toBe('ERROR');
     });
 
-    it('debe retornar "ERROR" para el método DELETE', async () => {
+    it('Should return "ERROR" for DELETE method', async () => {
       const superDecodedToken = { iss: 'super-token' };
 
       (jwt.verify as jest.Mock).mockReturnValue(superDecodedToken);
