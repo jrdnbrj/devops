@@ -8,8 +8,30 @@ on:
   pull_request:
 
 jobs:
-  # Build Stage
+  # Stage de Test
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run Lint
+        run: yarn lint
+
+      - name: Run Tests
+        run: yarn test
+
+  # Stage de Build
   build:
+    needs: test  # El stage de build solo se ejecuta si el de test fue exitoso
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -35,31 +57,9 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: docker push jrdnbrj/devops:${{ github.sha }}
 
-  # Test Stage
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "18"
-
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Run Lint
-        run: yarn lint
-
-      - name: Run Tests
-        run: yarn test
-
-  # Deploy Stage
+  # Stage de Deploy
   deploy:
-    needs: test
+    needs: build  # El stage de deploy solo se ejecuta si el de build fue exitoso
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
@@ -73,8 +73,12 @@ jobs:
       - name: Authenticate with DigitalOcean
         run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Set up Kubeconfig for DigitalOcean
-        run: doctl kubernetes cluster kubeconfig save c0bd3093-42ae-474d-96aa-539c3b0b7281
+      - name: Setup Kubeconfig for DigitalOcean
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
           
       - name: Deploy to Kubernetes
         run: |
