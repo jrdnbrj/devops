@@ -4,7 +4,7 @@ metadata:
   name: devops-service
   annotations:
     service.beta.kubernetes.io/do-loadbalancer-protocol: "https"
-    service.beta.kubernetes.io/do-loadbalancer-certificate-id: "097085cb-2d83-4643-8eac-47129bb4fbbc"
+    service.beta.kubernetes.io/do-loadbalancer-certificate-name: "devops-certificate"
     service.beta.kubernetes.io/do-loadbalancer-tls-ports: "443"
     service.beta.kubernetes.io/do-loadbalancer-redirect-http-to-https: "true"
 spec:
