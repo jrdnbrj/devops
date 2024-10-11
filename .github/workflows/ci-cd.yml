@@ -31,7 +31,7 @@ jobs:
 
   # Stage de Build
   build:
-    needs: test  # El stage de build solo se ejecuta si el de test fue exitoso
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -52,14 +52,15 @@ jobs:
         run: docker build -t jrdnbrj/devops:${{ github.sha }} .
 
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
       
       - name: Push Docker image to Docker Hub
         run: docker push jrdnbrj/devops:${{ github.sha }}
 
   # Stage de Deploy
   deploy:
-    needs: build  # El stage de deploy solo se ejecuta si el de build fue exitoso
+    needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
