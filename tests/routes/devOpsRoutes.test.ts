@@ -39,14 +39,14 @@ describe('DevOps Routes', () => {
       const response = await request(app)
         .post('/DevOps')
         .set('x-parse-rest-api-key', API_KEY)
-        .set('x-jwt-kwy', 'Bearer ' + SUPER_TOKEN)
+        .set('x-jwt-kwy', SUPER_TOKEN)
         .send(payload);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         message: `Hello ${payload.to} your message will be sent`,
       });
-      expect(response.headers['x-jwt-kwy']).toBe('Bearer ' + generatedToken);
+      expect(response.headers['x-jwt-kwy']).toBe(generatedToken);
 
       expect(jwt.sign).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -78,7 +78,7 @@ describe('DevOps Routes', () => {
       const response = await request(app)
         .post('/DevOps')
         .set('x-parse-rest-api-key', API_KEY)
-        .set('x-jwt-kwy', 'Bearer ' + SUPER_TOKEN)
+        .set('x-jwt-kwy', '' + SUPER_TOKEN)
         .send(payload);
 
       expect(response.status).toBe(400);
@@ -100,7 +100,7 @@ describe('DevOps Routes', () => {
       const response = await request(app)
         .post('/DevOps')
         .set('x-parse-rest-api-key', 'invalid-api-key')
-        .set('x-jwt-kwy', 'Bearer ' + SUPER_TOKEN)
+        .set('x-jwt-kwy', '' + SUPER_TOKEN)
         .send(payload);
 
       expect(response.status).toBe(403);
@@ -117,7 +117,7 @@ describe('DevOps Routes', () => {
       const response = await request(app)
         .get('/DevOps')
         .set('x-parse-rest-api-key', API_KEY)
-        .set('x-jwt-kwy', 'Bearer ' + SUPER_TOKEN);
+        .set('x-jwt-kwy', '' + SUPER_TOKEN);
 
       expect(response.status).toBe(200);
       expect(response.text).toBe('ERROR');
@@ -131,7 +131,7 @@ describe('DevOps Routes', () => {
       const response = await request(app)
         .put('/DevOps')
         .set('x-parse-rest-api-key', API_KEY)
-        .set('x-jwt-kwy', 'Bearer ' + SUPER_TOKEN)
+        .set('x-jwt-kwy', '' + SUPER_TOKEN)
         .send({});
 
       expect(response.status).toBe(200);
@@ -146,7 +146,7 @@ describe('DevOps Routes', () => {
       const response = await request(app)
         .delete('/DevOps')
         .set('x-parse-rest-api-key', API_KEY)
-        .set('x-jwt-kwy', 'Bearer ' + SUPER_TOKEN);
+        .set('x-jwt-kwy', '' + SUPER_TOKEN);
 
       expect(response.status).toBe(200);
       expect(response.text).toBe('ERROR');

@@ -7,8 +7,7 @@ export const checkTokenUniqueness = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const tokenHeader = req.headers["x-jwt-kwy"] as string;
-  const token: string = tokenHeader?.split("Bearer ")[1] || "";
+  const token = req.headers["x-jwt-kwy"] as string;
 
   try {
     const jwtSecret = process.env.JWT_SECRET as string;

@@ -30,7 +30,7 @@ describe('JWT Middleware', () => {
   afterEach(() => { jest.clearAllMocks(); });
 
   it('Should allow the request when the token is valid and in Redis.', async () => {
-    const token = 'Bearer valid-token';
+    const token = 'valid-token';
     req.headers!['x-jwt-kwy'] = token;
 
     const decodedToken = { iss: 'my-key', jti: 'unique-jti' };
@@ -47,7 +47,7 @@ describe('JWT Middleware', () => {
   });
 
   it('Should allow the request when the token is a super-token', async () => {
-    const token = 'Bearer super-token';
+    const token = 'super-token';
     req.headers!['x-jwt-kwy'] = token;
 
     const decodedToken = { iss: 'super-token' };
@@ -63,7 +63,7 @@ describe('JWT Middleware', () => {
   });
 
   it('Should reject the request when the token does not have jti', async () => {
-    const token = 'Bearer token-without-jti';
+    const token = 'token-without-jti';
     req.headers!['x-jwt-kwy'] = token;
 
     const decodedToken = { iss: 'my-key' };
@@ -78,7 +78,7 @@ describe('JWT Middleware', () => {
   });
 
   it('Should reject the request when the token is not in Redis', async () => {
-    const token = 'Bearer valid-token-not-in-redis';
+    const token = 'valid-token-not-in-redis';
     req.headers!['x-jwt-kwy'] = token;
 
     const decodedToken = { iss: 'my-key', jti: 'non-existent-jti' };
@@ -94,7 +94,7 @@ describe('JWT Middleware', () => {
   });
 
   it('Should reject the request when the token is invalid', async () => {
-    const token = 'Bearer invalid-token';
+    const token = 'invalid-token';
     req.headers!['x-jwt-kwy'] = token;
 
     (jwt.verify as jest.Mock).mockImplementation(() => {

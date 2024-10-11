@@ -21,7 +21,7 @@ router.post("/DevOps", async (req: Request, res: Response): Promise<void> => {
 
   await redisClient.setEx(jti, timeToLifeSec, "valid");
 
-  res.header("X-JWT-KWY", "Bearer " + token);
+  res.header("X-JWT-KWY", "" + token);
   res.json({ message: `Hello ${to} your message will be sent` });
 });
 

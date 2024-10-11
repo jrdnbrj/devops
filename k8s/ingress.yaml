@@ -4,6 +4,10 @@ metadata:
   name: devops-ingress
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/acme-challenge-type: http01
 spec:
   rules:
   - host: devops.jrdnbrj.com

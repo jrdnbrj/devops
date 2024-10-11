@@ -46,14 +46,14 @@ describe('Integration Test: App', () => {
       const response = await request(app)
         .post('/DevOps')
         .set('x-parse-rest-api-key', API_KEY)
-        .set('x-jwt-kwy', 'Bearer super-token')
+        .set('x-jwt-kwy', 'super-token')
         .send(payload);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         message: `Hello ${payload.to} your message will be sent`,
       });
-      expect(response.headers['x-jwt-kwy']).toBe('Bearer ' + generatedToken);
+      expect(response.headers['x-jwt-kwy']).toBe('' + generatedToken);
 
       expect(jwt.sign).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -85,7 +85,7 @@ describe('Integration Test: App', () => {
 
       const response = await request(app)
         .post('/DevOps')
-        .set('x-jwt-kwy', 'Bearer super-token')
+        .set('x-jwt-kwy', 'super-token')
         .send(payload);
 
       expect(response.status).toBe(403);
@@ -124,7 +124,7 @@ describe('Integration Test: App', () => {
       const response = await request(app)
         .post('/DevOps')
         .set('x-parse-rest-api-key', API_KEY)
-        .set('x-jwt-kwy', 'Bearer invalid-token')
+        .set('x-jwt-kwy', 'invalid-token')
         .send(payload);
 
       expect(response.status).toBe(401);
@@ -139,7 +139,7 @@ describe('Integration Test: App', () => {
 
         const response = await (request(app) as any)[method]('/DevOps')
           .set('x-parse-rest-api-key', API_KEY)
-          .set('x-jwt-kwy', 'Bearer super-token');
+          .set('x-jwt-kwy', 'super-token');
 
         expect(response.status).toBe(200);
         expect(response.text).toBe('ERROR');
